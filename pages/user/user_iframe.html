@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>宿舍管理系统</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+  <!-- Pace -->
+  <link rel="stylesheet" href="../../plugins/pace-master/themes/blue/pace-theme-flash.css">
+  <script type="text/javascript" src="../../plugins/pace-master/pace.min.js"></script>
+  <!-- Bootstrap 3.3.6 -->
+  <link rel="stylesheet" href="../../bootstrap/css/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="../../dist/css/font-awesome.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="../../dist/css/ionicons.min.css">
+  <!-- jvectormap -->
+  <link rel="stylesheet" href="../../plugins/jvectormap/jquery-jvectormap-1.2.2.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../../dist/css/AdminLTE.min.css">
+  <!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+  <link rel="stylesheet" href="../../dist/css/skins/all-skins.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+  <script src="../../plugins/vue/vuejs-2.5.16.js"></script>
+
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+ 
+    <!-- 正文区域 -->
+    <section class="content" id="app">
+
+        <div class="box-body">
+            <!--tab页-->
+            <div class="nav-tabs-custom">
+              
+                <!--tab头/-->
+                <!--tab内容-->
+                <div class="tab-content" >
+
+                    <!--显示的内容-->
+                    <div class="tab-pane active" id="tab-build">
+                                      
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>所属部门</label>
+                                <select class="form-control select2" v-model="params.deptid" style="width: 100%;"  v-on:change="findUserByDept()"  >
+                                        <option  v-for="dept in deptList" :value="dept.id" v-text="dept.deptname" ></option>           
+                                <option value="" selected="selected">请选择部门</option>                                             
+                                </select>
+                            </div>
+                        <!-- /.form-group -->
+                        </div>
+                       
+                        <div class="col-md-3">
+                                <div class="form-group">
+                                        <label>用户名</label>
+                                        <input type="text" v-model="params.username" v-on:keyUp.enter="findUserByName()" class="form-control input-sm" placeholder="回车搜索用户名">
+                                </div>
+                                
+                            </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                        <!-- 数据表格 -->
+                        <div class="table-box">
+
+                            <!--工具栏-->
+                            <div class="pull-left">
+                                <div class="form-group form-inline">
+                                    <div class="btn-group">
+                                        <button type="button" class="btn btn-default" title="新建" v-on:click="addUserUI()">
+                                            <i class="fa fa-file-o"></i> 添加用户
+                                        </button>
+
+                                        <button type="button" class="btn btn-default" title="删除" v-on:click="deleteUsers()">
+                                            <i class="fa fa-trash-o"></i> 删除用户
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!--工具栏/-->
+
+                            <!--数据列表-->
+                            <table id="dataList" class="table table-bordered table-striped table-hover dataTable">
+                                <thead>
+                                    <tr>
+										<th class="" style="padding-right: 0px"><input
+											id="selall" type="checkbox" class="icheckbox_square-blue">
+										</th>
+										<th class="sorting_asc">序号</th>
+										<th class="sorting_desc">用户名</th>
+										<th class="sorting_desc">登录用户</th>
+										<th class="sorting_asc">联系电话</th>
+                                        <th class="sorting_desc">所属部门</th>
+                                        <th class="sorting">用户角色</th>
+										<th class="sorting">性别</th>
+										<th class="sorting">状态</th>
+										<th class="text-center">操作</th>
+									</tr>
+                                </thead>
+                                <tbody>
+
+                                <tr v-for="(user,index) in userlist">
+
+                                    <td><input  type="checkbox" :value="user.id" v-model="userIds" ></td>
+                                    <td>
+                                        {{index+1}}
+                                    </td>
+                                    <td>{{user.username}}</td>
+                                    <td>{{user.loginname }}</td>
+                                    <td>{{user.telphone }}</td>
+                                    <td>{{user.deptname }}</td>
+                                    <td>{{user.rolename }}</td>
+                                    <td>{{user.sex }}</td>
+                                    <td>{{user.status}}</td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn bg-olive btn-xs" v-on:click="editUserById(user.id)" >修改
+                                        </button>
+                                        <button type="button" class="btn bg-olive btn-xs" v-on:click="userDetail(user.id)" >详情
+                                        </button>
+
+                                    </td>
+                                </tr>
+
+                                </tbody>
+                            </table>
+                            <!--数据列表/-->
+                        </div>
+                        <!-- 数据表格 /-->
+
+                    </div>
+                    <!-- /.box-body -->
+
+                    <!-- .box-footer-->
+                    <div class="box-footer">
+                        <div class="pull-left">
+                            <div class="form-group form-inline">
+                                总共{{totalPage}} 页，共{{total}} 条数据。 每页
+                                <select class="form-control" v-model="params.pageSize" v-on:change="goPageBySize()">
+                                    <option value="10">10</option>
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                </select> 条
+                            </div>
+                        </div>
+
+                        <div class="box-tools pull-right">
+                            <ul class="pagination">
+                                <li>
+                                    <a href="#" aria-label="Previous">首页</a>
+                                </li>
+                                <li><a href="#" v-on:click="goPageByNum(params.pageNum-1)">上一页</a></li>
+                                <li v-for=" i in navateNumList"><a href="#" v-on:click="goPageByNum(i)">{{i}}</a></li>
+                                <li><a href="#" v-on:click="goPageByNum(params.pageNum+1)">下一页</a></li>
+                                <li>
+                                    <a href="#" aria-label="Next">尾页</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+                    <!-- /.box-footer-->
+
+                </div>
+                <!--tab内容/-->
+              
+            </div>
+            <!--tab页/-->
+        </div>
+       
+    </section>
+      
+<script src="../../plugins/vue/axios-0.18.0.js"></script>
+<script  src= '../../dist/js/common_dormitory.js' ></script>
+
+<script>  
+        var vue = new Vue({
+            el: "#app",
+            data: {
+                baseUrl : '',                
+                userlist:[],
+                userIds:[],
+                deptList:[],
+                navateNumList:[],
+                total:0,
+                totalPage:0,
+                params:{
+                    pageNum:"1",
+                    pageSize:"10",
+                    deptid: "",
+                    username : ""
+                }
+            },
+            methods: {
+                goPageByNum: function(pageNum){
+                    var _this  = this;
+                    _this.params.pageNum=pageNum;
+                    _this.findAll();
+                }, goPageBySize: function(){
+                    var _this  = this;
+                    _this.findAll();
+                },
+                findAll: function () {
+                    var _this = this;
+                    axios.post(_this.baseUrl+'/admin/findAllUser',_this.params).then((res)=>{
+                        _this.userlist=res.data.data.list;
+                        _this.total=res.data.data.total;
+                        _this.totalPage=res.data.data.pages;
+                        _this.params.pageNum=res.data.data.pageNum;
+                        _this.params.pageSize=res.data.data.pageSize;
+                        _this.navateNumList=res.data.data.navigatepageNums;
+                    
+                }).catch(function (err) {
+                        console.log(err);
+                    });
+                },
+                findDeptJson: function(){
+                    var _this = this;
+                    axios.get(_this.baseUrl+"/department/findAll").then((res)=>{
+                        _this.deptList=res.data.data;
+                    })
+                },
+                findUserByDept: function () {
+                    var _this = this;
+                    _this.findAll();
+                },findUserByName: function (){
+                    var _this = this;
+                    _this.findAll();
+                },addUserUI:function(){
+                    location.href="./user_add.html";
+                },
+                editUserById: function (userId){
+                    location.href="./user_edit.html?id="+userId;
+
+                 },userDetail: function (userId){
+                    location.href="./user_detail.html?id="+userId;
+                  
+                 },deleteUsers: function () {
+                    var _this = this;
+                    if(this.userIds.length>0){
+                        var flag = window.confirm("您确定要删除选中的"+_this.userIds.length+"条数据吗?");
+                        if(flag){
+                            axios.post(_this.baseUrl+"/admin/deleteUserByIds",_this.userIds).then(function (response) {
+                                if(response.data.flag){
+                                    alert(response.data.message);
+                                    _this.userIds=[];
+                                    _this.findAll();
+                                }else{
+                                    alert(response.data.message);
+                                }
+                            }).catch(function (err) {
+                            });
+                        }
+                    }else{
+                        alert("请选择删除的数据 可以多选!");
+                    }
+    
+                }
+            },
+            created(){
+                 //取出基本请求路径
+                var httpUrl = warp.getBaseUrl();
+                this.baseUrl=httpUrl;
+                this.findAll();
+                this.findDeptJson();
+            }
+        });
+    
+</script>
+</body>
+</html>

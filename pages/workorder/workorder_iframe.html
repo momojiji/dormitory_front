@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>宿舍管理系统</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+  <!-- Pace -->
+  <link rel="stylesheet" href="../../plugins/pace-master/themes/blue/pace-theme-flash.css">
+  <script type="text/javascript" src="../../plugins/pace-master/pace.min.js"></script>
+  <!-- Bootstrap 3.3.6 -->
+  <link rel="stylesheet" href="../../bootstrap/css/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="../../dist/css/font-awesome.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="../../dist/css/ionicons.min.css">
+  <!-- jvectormap -->
+  <link rel="stylesheet" href="../../plugins/jvectormap/jquery-jvectormap-1.2.2.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../../dist/css/AdminLTE.min.css">
+  <!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+  <link rel="stylesheet" href="../../dist/css/skins/all-skins.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+  <script src="../../plugins/vue/vuejs-2.5.16.js"></script>
+
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+ 
+    <!-- 正文区域 -->
+    <section class="content" id="app">
+
+        <div class="box-body">
+            <!--tab页-->
+            <div class="nav-tabs-custom">
+                <!--tab头/-->
+                <!--tab内容-->
+                <div class="tab-content" >
+
+                    <!--工单信息显示的内容-->
+                    <div class="tab-pane active" id="tab-build">
+                                      
+                    <div class="row">
+                        <div class="col-md-2">
+                                <div class="form-group">
+                                        <label>搜索工单信息</label>
+                                        <input type="text" v-model="ordername" v-on:keyUp.enter="findByOrdername()" class="form-control input-sm" placeholder="回车搜索名称">
+                                </div>
+                                
+                            </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                        <!-- 数据表格 -->
+                        <div class="table-box">
+                            
+                            <!--工具栏/-->
+
+                            <!--数据列表-->
+                            <table id="dataList" class="table table-bordered table-striped table-hover dataTable">
+                                <thead>
+
+                                <tr>
+                                    <th class="" style="padding-right: 0px">
+                                        <input  id="selall" type="checkbox" class="icheckbox_square-blue">
+                                    </th>
+                                    <th class="sorting_asc">序号</th>
+                                    <th class="sorting_desc">工单名称</th>
+                                    <th class="sorting_desc">工单编号</th>
+                                    <th class="sorting">报修位置</th>
+                                    <th class="sorting">登记人员</th>
+                                    <th class="sorting">登记人员电话</th>
+                                    <th class="sorting">保修联系人</th>
+                                    <th class="sorting">报修联系人电话</th>
+                                    <th class="sorting">是否人为</th>
+                                    <th class="sorting">登记时间</th>
+                                    <th class="sorting">审核状态</th>
+
+                                    <th class="text-center">操作</th>
+                                </tr>
+
+                                </thead>
+                                <tbody>
+
+                                <tr v-for="(workorder,index) in workorderList">
+
+                                    <td><input  type="checkbox" :value="workorder.id" v-model="workorderIds" ></td>
+                                    <td>
+                                        {{index+1}}
+                                    </td>
+                                    <td>{{workorder.ordername}}</td>
+                                    <td>{{workorder.ordernum}}</td>
+                                    <td>{{workorder.position}}</td>
+                                    <td>{{workorder.studentname}}</td>
+                                    <td>{{workorder.usertel}}</td>
+                                    <td>{{workorder.repairname}}</td>
+                                    <td>{{workorder.repairtel}}</td>
+                                    <td>{{workorder.isartificial==0?'否':'是'}}</td>
+                                    <td>{{workorder.checkindate}}</td>
+                                    <td>{{workorder.status}}</td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn bg-olive btn-xs" v-on:click="editWorkorderById(workorder.id)" >修改
+                                        </button>
+                                        <button type="button" class="btn bg-olive btn-xs" v-on:click="workorderDetail(workorder.id)" >详情
+                                        </button>
+
+                                    </td>
+                                </tr>
+
+                                </tbody>
+                            </table>
+                            <!--数据列表/-->
+                        </div>
+                        <!-- 数据表格 /-->
+
+                    </div>
+                    <!-- /.box-body -->
+
+                    <!-- .box-footer-->
+                    <div class="box-footer">
+                        <div class="pull-left">
+                            <div class="form-group form-inline">
+                                总共{{totalPage}} 页，共{{total}} 条数据。 每页
+                                <select class="form-control" v-model="params.pageSize" v-on:change="goPageBySize()">
+                                    <option value="10">10</option>
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                </select> 条
+                            </div>
+                        </div>
+
+                        <div class="box-tools pull-right">
+                            <ul class="pagination">
+                                <li>
+                                    <a href="#" aria-label="Previous">首页</a>
+                                </li>
+                                <li><a href="#" v-on:click="goPageByNum(params.pageNum-1)">上一页</a></li>
+                                <li v-for=" i in navateNumList"><a href="#" v-on:click="goPageByNum(i)">{{i}}</a></li>
+                                <li><a href="#" v-on:click="goPageByNum(params.pageNum+1)">下一页</a></li>
+                                <li>
+                                    <a href="#" aria-label="Next">尾页</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+                    <!-- /.box-footer-->
+
+                </div>
+                <!--tab内容/-->
+              
+            </div>
+            <!--tab页/-->
+        </div>
+       
+    </section>
+      
+<script src="../../plugins/vue/axios-0.18.0.js"></script>
+<script  src= '../../dist/js/common_dormitory.js' ></script>
+
+<script>  
+        var vue = new Vue({
+            el: "#app",
+            data: {
+                baseUrl : '',
+                workorderList:[],
+                workorderIds:[],
+                navateNumList:[],
+                ordername:'',
+                workorderModel: {
+                    id:"",
+                    ordername:"",
+                    ordernum:"",
+                    ordertype:"",
+                    position:"",
+                    classinfoname:"",
+                    studentname:"",
+                    usertel:"",
+                    repairname:"",
+                    repairtel:"",
+                    isartificial:"",
+                    checkindate:"",
+                    imgurl:"",
+                    dormitoryname:"",
+                    dormitoryname:"",
+                    roomname:"",
+                    status:"",
+                    isvalidate:""
+                },
+                total:0,
+                totalPage:0,
+                params:{
+                    pageNum:"1",
+                    pageSize:"10"
+                }
+               
+            },
+            methods: {
+                goPageByNum: function(pageNum){
+                    var _this  = this;
+                    _this.params.pageNum=pageNum;
+                    _this.findByOrdername();
+                }, goPageBySize: function(){
+                    var _this  = this;
+                    _this.findByOrdername();
+                },findByOrdername: function (){
+                    var _this = this;
+                     _this.findAllWorkorderBySearch();
+                },addWorkorder:function(){
+                    location.href="workorder_add.html";
+                },
+                editWorkorderById: function (workorderId){
+                    location.href="./workorder_edit.html?id="+workorderId;
+
+                 },
+                workorderDetail: function (workorderId){
+                    location.href="./workorder_detail.html?id="+workorderId;
+                },findAllWorkorderBySearch: function () {
+                    var _this = this;
+                    axios.get(_this.baseUrl+"/workorder/findAllWorkorderBySearch?"+
+                            "&ordername="+_this.ordername+"&pageNum="+_this.params.pageNum+"&pageSize="+_this.params.pageSize).then((res)=>{
+                    _this.workorderList=res.data.data.list;
+                    _this.total=res.data.data.total;
+                    _this.totalPage=res.data.data.pages;
+                    _this.params.pageNum=res.data.data.pageNum;
+                    _this.params.pageSize=res.data.data.pageSize;
+                    _this.navateNumList=res.data.data.navigatepageNums;
+                }).catch(function (err) {
+                    });
+                }
+            },
+            created(){
+                //取出基本请求路径
+                var httpUrl = warp.getBaseUrl();
+                this.baseUrl=httpUrl;
+                this.findAllWorkorderBySearch();
+            }
+        });
+    
+</script>
+</body>
+</html>

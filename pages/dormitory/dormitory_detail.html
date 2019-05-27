@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>AdminLTE 2 | Dashboard</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+  <!-- Pace -->
+  <link rel="stylesheet" href="../../plugins/pace-master/themes/blue/pace-theme-flash.css">
+  <script type="text/javascript" src="../../plugins/pace-master/pace.min.js"></script>
+  <!-- Bootstrap 3.3.6 -->
+  <link rel="stylesheet" href="../../bootstrap/css/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="../../dist/css/font-awesome.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="../../dist/css/ionicons.min.css">
+  <!-- jvectormap -->
+  <link rel="stylesheet" href="../../plugins/jvectormap/jquery-jvectormap-1.2.2.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../../dist/css/AdminLTE.min.css">
+  <!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+  <link rel="stylesheet" href="../../dist/css/skins/all-skins.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+  <script src="../../plugins/vue/vuejs-2.5.16.js"></script>
+
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+ 
+    <!-- 正文区域 -->
+    <section class="content" id="app" >
+        <!-- Direct Chat -->
+        <div class="row"  >
+
+            <!-- /.col -->
+            <div class="col-md-4"  v-for="roomStudent in roomStudentList">
+                <!-- Widget: user widget style 1 -->
+                <div class="box box-widget widget-user">
+                    <!-- Add the bg color to the header using any of the bg-* classes -->
+                    <div class="widget-user-header bg-black" style="background: url('../../dist/img/photo1.png') center center;">
+                        <h3 class="widget-user-username">学号</h3>
+                        <h5 class="widget-user-desc">{{roomStudent.studentNum}}</h5>
+                    </div>
+                    <div class="widget-user-image">
+                        <img class="img-circle" :src="roomStudent.headImg" alt="User Avatar">
+                    </div>
+                    <div class="box-footer">
+                        <div class="row">
+                            <div class="col-sm-4 border-right">
+                                <div class="description-block">
+                                    <h5 class="description-header">姓名:</h5>
+                                    <span class="description-text">{{roomStudent.studentName}}</span>
+                                </div>
+                                <!-- /.description-block -->
+                            </div>
+                            <!-- /.col -->
+                            <div class="col-sm-4 border-right">
+                                <div class="description-block">
+                                    <h5 class="description-header">班级</h5>
+                                    <span class="description-text">{{roomStudent.className}}</span>
+                                </div>
+                                <!-- /.description-block -->
+                            </div>
+                            <!-- /.col -->
+                            <div class="col-sm-4">
+                                <div class="description-block">
+                                    <h5 class="description-header">床号</h5>
+                                    <span class="description-text">{{roomStudent.bedNum}}</span>
+                                </div>
+                                <!-- /.description-block -->
+                            </div>
+                            <!-- /.col -->
+                        </div>
+                        <!-- /.row -->
+                    </div>
+                </div>
+                <!-- /.widget-user -->
+                <td>
+                    
+                    <button  v-if="roomStudent.status" type="button" v-on:click="showmodal(roomStudent.allocationId);"  class= "btn btn-block btn-success" >
+                        入住
+                    </button>
+                    <button   v-else type="button"  v-on:click="studentCheckOut(roomStudent.allocationId,roomStudent.studentId)" class="btn btn-block btn-warning">退房</button>
+
+                </td>
+
+
+            </div>
+
+        </div>
+        <!--模态窗口-->
+        <div class="tab-pane" id="tab-model">
+
+                <div id="list-student" class="modal modal-primary" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title">学生入住</h4>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label>所属学校</label>
+                                        <select class="form-control select2" v-model="params.collegeId" style="width: 100%;"  v-on:change="findInstituteJson()"  >
+                                                <option  v-for="college in collegeList" :value="college.id" v-text="college.collegename" ></option>           
+                                        <option value="" selected="selected">请选择学校</option>                                             
+                                        </select>
+                                    </div>
+                                <!-- /.form-group -->
+                                </div>
+                                <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>所属院校</label>
+                                            <select class="form-control select2" v-model="params.instituteId" style="width: 100%;"  v-on:change="findMajorJson()"  >
+                                                    <option  v-for="institute in instituteList" :value="institute.id" v-text="institute.collegename" ></option>           
+                                                                                        
+                                            </select>
+                                        </div>
+                                    <!-- /.form-group -->
+                                </div>
+                                <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>所属专业</label>
+                                            <select class="form-control select2" v-model="params.majorId" style="width: 100%;"  v-on:change="findClassJson()"  >
+                                                    <option  v-for="major in majorList" :value="major.id" v-text="major.majorname" ></option>           
+                                                                                        
+                                            </select>
+                                        </div>
+                                    <!-- /.form-group -->
+                                </div>
+                                <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label>所属班级</label>
+                                            <select class="form-control select2" v-model="params.classId" style="width: 100%;"  v-on:change="findClassStudentJson()"  >
+                                                    <option  v-for="cla in classList" :value="cla.id" v-text="cla.classinfoname" ></option>           
+                                                                                        
+                                            </select>
+                                        </div>
+                                    <!-- /.form-group -->
+                                </div>
+                                <div class="col-md-2">
+                                        <div class="form-group">
+                                                <label>搜索学生</label>
+                                                <input type="text" v-model="params.studentName" v-on:keyUp.enter="findClassStudentByName()" class="form-control input-sm" placeholder="回车搜索姓名">                                                 
+                                        </div>
+                                        
+                                    </div>
+                                <!-- /.col -->
+                            </div>
+
+                            <!-- 数据表格 -->
+                            <div class="table-box">
+
+                               
+                                <!--工具栏/-->
+
+                                <!--数据列表-->
+                                <table id="dataList" class="table table-bordered table-striped table-hover dataTable">
+                                    <thead>
+
+                                    <tr>
+                                        <th class="" style="padding-right: 0px"><input
+                                                id="selall" type="checkbox" class="icheckbox_square-blue">
+                                        </th>
+                                        <th class="sorting_asc">序号</th>
+                                        <th class="sorting_desc">名称</th>
+                                        <th class="sorting_desc">入学年份</th>
+                                        <th class="sorting">班级</th>
+                                        <th class="sorting">性别</th>
+                                        <th class="sorting">院系/部</th>
+                                        <th class="sorting">专业</th>
+                                        <th class="sorting">年级</th>
+                                        <th class="sorting">状态</th>
+                                        <th class="sorting">操作</th>
+                                    </tr>
+
+                                    </thead>
+                                    <tbody>
+
+                                    <tr v-for="(student,index) in studentList">
+
+                                        <td><input  type="checkbox" :value="student.id" ></td>
+                                        <td>
+                                            {{index+1}}
+                                        </td>
+                                        <td>{{student.studentname}}</td>
+                                        <td>{{student.collegecode}}</td>
+                                        <td>{{student.classinfoname}}</td>
+                                        <td>{{student.sex}}</td>
+                                        <td>{{student.collegename}}</td>
+                                        <td>{{student.majorname}}</td>
+                                        <td>{{student.presentage}}</td>
+                                        <td>{{student.status}}</td>
+                                        <td class="text-center">
+                                            <button type="button" class="btn bg-olive btn-xs" v-on:click="studentCheckIn(student.id)" >入住
+                                            </button>
+
+                                        </td>
+                                    </tr>
+
+                                    </tbody>
+                                </table>
+                                <!--数据列表/-->
+                            </div>
+                            <!-- 数据表格 /-->
+                        </div>
+                         <!-- .box-footer-->
+                        <div class="box-footer">
+                            <div class="pull-left">
+                                <div class="form-group form-inline">
+                                    总共{{totalPage}} 页，共{{total}} 条数据。 每页
+                                    <select class="form-control" v-model="params.pageSize" v-on:change="goPageBySize()">
+                                        <option value="10">10</option>
+                                        <option value="15">15</option>
+                                        <option value="20">20</option>
+                                    </select> 条
+                                </div>
+                            </div>
+
+                            <div class="box-tools pull-right">
+                                <ul class="pagination">
+                                    <li>
+                                        <a href="#" aria-label="Previous">首页</a>
+                                    </li>
+                                    <li><a href="#" v-on:click="goPageByNum(params.pageNum-1)">上一页</a></li>
+                                    <li v-for=" i in navateNumList"><a href="#" v-on:click="goPageByNum(i)">{{i}}</a></li>
+                                    <li><a href="#" v-on:click="goPageByNum(params.pageNum+1)">下一页</a></li>
+                                    <li>
+                                        <a href="#" aria-label="Next">尾页</a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    <!-- /.box-footer-->
+                        <!-- /.modal-content -->
+                    </div>
+
+                    <!-- /.modal-dialog -->
+                </div>
+                <!-- /.modal -->
+        </div>
+        <!--模态窗口/-->
+         <!--模态窗口-->
+         <div class="tab-pane" id="tab-model">
+
+            <div id="history_back" class="modal modal-primary" role="dialog">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                         <!--订单信息/--> <!--工具栏-->
+                        <div class="box-tools text-center">
+                            <div class="widget-user-header bg-black" >
+                                <h3 class="widget-user-username">当前房间尚未分配床位</h3>
+                               
+                            </div>
+                            <button type="button" class="btn bg-default"
+                                    onclick="history.back(-1);">返回</button>
+                        </div>
+                        <!--工具栏/-->
+                    </div>
+                </div>
+
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.modal -->
+    </div>
+    <!--模态窗口/-->
+    </section>
+      
+<script src="../../plugins/vue/axios-0.18.0.js"></script>
+<script  src= '../../dist/js/common_dormitory.js' ></script>
+<script  src= '../../plugins/jQuery/jquery-2.2.3.min.js' ></script>
+<script src="../../bootstrap/js/bootstrap.min.js"></script>
+<script>  
+        var vue = new Vue({
+            el: "#app",
+            data: {
+                baseUrl : '',
+                roomStudentList: [],
+                studentList: [],
+                collegeList: [],
+                instituteList: [],
+                majorList:[],
+                classList:[],
+                allocationId:"",
+                navateNumList:[],
+                total:0,
+                totalPage:0,
+                params:{
+                    pageNum:"1",
+                    pageSize:"10",
+                    collegeId:"",
+                    instituteId :"",
+                    majorId : "",
+                    classId : "",
+                    status:"0",
+                    studentName : ""
+                }
+               
+            },
+            methods: {
+                goPageByNum: function(pageNum){
+                    var _this  = this;
+                    _this.params.pageNum=pageNum;
+                    _this.showStudentList();
+                }, goPageBySize: function(){
+                    var _this  = this;
+                    _this.showStudentList();
+                },
+                findRoomStudent: function(){
+                    var _this = this;
+                     //获取传递的id参数
+                     var str = window.location.href;
+                    var argStr = str.split("=");
+                    var roomId = argStr[1];
+                    axios.get(_this.baseUrl+"/allocation/findLocationStudent?roomId="+roomId).then((res)=>{
+                        _this.roomStudentList=res.data.data;
+                        if(_this.roomStudentList.length==0){
+                            $('#history_back').modal('show');
+                        }
+                    }).catch(function (err) {
+                        console.log(err);
+                    });
+                },showmodal:function(allocationId){
+                    var _this  = this;
+                    _this.allocationId = allocationId;
+                    _this.showStudentList();
+                    $('#list-student').modal('show');
+                },
+                showStudentList: function(){
+                    var _this = this;
+                    axios.post(_this.baseUrl+"/student/findStudentPageByParams?",_this.params).then((res)=>{
+                        _this.studentList=res.data.data.list;
+                        _this.total=res.data.data.total;
+                        _this.totalPage=res.data.data.pages;
+                        _this.params.pageNum=res.data.data.pageNum;
+                        _this.params.pageSize=res.data.data.pageSize;
+                        _this.navateNumList=res.data.data.navigatepageNums;                       
+                    }).catch(function (err){
+                        console.log(err);
+                    });
+                   
+                },findClassStudentByName: function (){
+                    var _this = this;
+                    _this.showStudentList();
+                    
+                },findCollegeJson: function (){
+                    var _this = this;
+                    
+                    axios.get(_this.baseUrl+'/college/findAllCollegeJson').then((res)=>{
+                        //学校的集合
+                        _this.collegeList=res.data.data;
+                    }).catch(function (err) {
+                    });
+                },findInstituteJson: function (){
+                    var _this = this;
+                    if(_this.params.collegeId!=''&&_this.params.collegeId!=null){
+                        axios.get(_this.baseUrl+'/college/findCollegeJsonById?collegeId='+_this.params.collegeId).then((res)=>{
+                            //学院list
+                            _this.instituteList=res.data.data;
+                            _this.majorList=[];
+                            _this.classList=[];
+                        }).catch(function (err) {
+                        });
+                    }else{
+                        alert('请选择学校!');
+                    }
+                   
+                    
+                },findMajorJson: function (){
+                    var _this = this;
+                    axios.get(_this.baseUrl+"/major/findMajorByCollegeId?collegeId="+_this.params.instituteId).then((res)=>{
+                        //专业的集合
+                        _this.majorList=res.data.data;
+                        _this.classList=[];
+                        _this.showStudentList();
+                    }).catch(function (err) {
+                    });
+                },findClassJson: function (){
+                    var _this = this;
+                    axios.get(_this.baseUrl+"/classinfo/findClassJson?majorId="+_this.params.majorId).then((res)=>{
+                        //专业的集合
+                        _this.classList=res.data.data;
+                        _this.showStudentList();
+                    }).catch(function (err) {
+                    });
+                },findClassStudentJson: function (){
+                    var _this = this;              
+                    _this.showStudentList();
+                    
+                },studentCheckIn: function (studentId){
+                    var _this = this;
+                    if(window.confirm('确定要办理入住该床位吗?')){
+                        axios.get(_this.baseUrl+"/allocation/studentCheckIn?allocationId="+_this.allocationId+"&studentId="+studentId).then((res)=>{
+                            if(res.data.flag){
+                                alert('成功办理学生入住');
+                                this.findRoomStudent();
+                                $('#list-student').modal('hide');
+                                
+                            }else{
+                                alert(res.data.message);
+                            }
+                        }).catch(function (err) {
+                        });
+                    }
+                },
+                studentCheckOut: function (allocationId,studentId) {
+                    var _this = this;
+                    if(window.confirm('确定要办理退宿吗?')){
+                        axios.get(_this.baseUrl+"/allocation/studentCheckOut?allocationId="+allocationId+"&studentId="+studentId).then((res)=>{
+                            if(res.data.flag){
+                                alert('成功办理学生退宿');
+                                this.findRoomStudent();
+                            }else{
+                                alert(res.data.message);
+                            }
+
+                        }).catch(function (err) {
+                        });
+                    };
+
+                }
+            },
+            created(){
+                //取出基本请求路径
+                var httpUrl = warp.getBaseUrl();
+                this.baseUrl=httpUrl;
+                this.findRoomStudent();
+                this.findCollegeJson();
+
+
+            }
+        });
+    
+</script>
+</body>
+</html>

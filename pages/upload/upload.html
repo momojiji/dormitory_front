@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>宿舍管理|系统</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+  <!-- Pace -->
+  <link rel="stylesheet" href="../../plugins/pace-master/themes/blue/pace-theme-flash.css">
+  <script type="text/javascript" src="../../plugins/pace-master/pace.min.js"></script>
+  <!-- Bootstrap 3.3.6 -->
+  <link rel="stylesheet" href="../../bootstrap/css/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="../../dist/css/font-awesome.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="../../dist/css/ionicons.min.css">
+  <!-- jvectormap -->
+  <link rel="stylesheet" href="../../plugins/jvectormap/jquery-jvectormap-1.2.2.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../../dist/css/AdminLTE.min.css">
+  <!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+  <link rel="stylesheet" href="../../dist/css/skins/all-skins.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+  <script src="../../plugins/vue/vuejs-2.5.16.js"></script>
+  <script src="../../plugins/jQuery/jquery-2.2.3.min.js"></script>
+  <script src="../../dist/js/uploadify/jquery.uploadify.min.js"></script>  
+  <link type="text/css" rel="stylesheet" href="../../dist/js/uploadify/uploadify.css">  
+
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+    <!-- 正文区域 -->
+    <section class="content" id="app">
+        <div class="box-body">
+            <!--tab页-->
+            <div class="nav-tabs-custom">
+                <!--tab头/-->
+                <!--tab内容-->
+                <div class="tab-content" >
+                      <!-- 正文区域 -->
+                      <section class="content"> <!--工单信息管理-->
+    
+                        <div class="panel panel-default">
+                            <div class="panel-heading">图片上传</div>
+                            <form role="form">
+                                    <div class="box-body">
+                                       
+                                        <div class="form-group">
+                                            <label for="exampleInputFile">File input</label>
+                                            <input type="file" name="file" id="exampleInputFile">
+                                        </div>
+                                    </div>
+                                    <!-- /.box-body -->
+    
+                                    <div class="box-footer">
+                                        <button type="submit" class="btn btn-primary">上传</button>
+                                    </div>
+                            </form>
+                        </div>
+                        <!--订单信息/--> <!--工具栏-->
+                        <div class="box-tools text-center">
+                            <button type="button" v-on:click="addWorkorder()" class="btn bg-maroon">保存</button>
+                            <button type="button" class="btn bg-default"  onclick="history.back(-1);">返回</button>
+                        </div>
+                        <!--工具栏/-->
+                    </section>
+                    <!-- 正文区域 /-->
+                </div>
+               
+            </div>
+            <!--tab页/-->
+        </div>
+        
+    </section>
+      
+<script src="../../plugins/vue/axios-0.18.0.js"></script>
+<script  src= '../../dist/js/common_dormitory.js' ></script>
+
+<script>  
+        var vue = new Vue({
+            el: "#app",
+            data: {
+                baseUrl : '',
+                workorderList:[],
+                workorderIds:[],
+                navateNumList:[],
+                ordername:'',
+                workorderModel: {
+                    id:"",
+                    ordername:"",
+                    ordernum:"",
+                    ordertype:"",
+                    position:"",
+                    classinfoname:"",
+                    studentname:"",
+                    usertel:"",
+                    repairname:"",
+                    repairtel:"",
+                    isartificial:"",
+                    checkindate:"",
+                    imgurl:"",
+                    dormitoryname:"",
+                    dormitoryname:"",
+                    roomname:"",
+                    status:"",
+                    isvalidate:""
+                },
+                total:0,
+                totalPage:0,
+                params:{
+                    pageNum:"1",
+                    pageSize:"10"
+                },
+                level : 0,
+
+            },
+            methods: {
+                addWorkorder: function (){
+                    var _this = this;
+                    axios.post(_this.baseUrl+"/workorder/addWorkorder",_this.workorderModel).then(function (response) {
+                        if(response.data.flag){
+                            alert(response.data.message);
+                           window.location.href="workorder_iframe.html";
+                        }else{
+                            alert(response.data.message);
+                        }
+    
+                    }).catch(function (err) {
+                    });
+                }
+            },
+            created(){
+                //从存储中取出基本请求路径
+                //取出基本请求路径
+                var httpUrl = warp.getBaseUrl();
+                this.baseUrl=httpUrl;
+
+            }
+        });
+    
+</script>
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>AdminLTE 2 | Dashboard</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+  <!-- Pace -->
+  <link rel="stylesheet" href="../../plugins/pace-master/themes/blue/pace-theme-flash.css">
+  <script type="text/javascript" src="../../plugins/pace-master/pace.min.js"></script>
+  <!-- Bootstrap 3.3.6 -->
+  <link rel="stylesheet" href="../../bootstrap/css/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="../../dist/css/font-awesome.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="../../dist/css/ionicons.min.css">
+  <!-- jvectormap -->
+  <link rel="stylesheet" href="../../plugins/jvectormap/jquery-jvectormap-1.2.2.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../../dist/css/AdminLTE.min.css">
+  <!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+  <link rel="stylesheet" href="../../dist/css/skins/all-skins.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+  <script src="../../plugins/vue/vuejs-2.5.16.js"></script>
+
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+    <!-- 正文区域 -->
+    <section class="content" id="app">
+        <div class="box-body">
+            <!--tab页-->
+            <div class="nav-tabs-custom">
+                <!--tab头/-->
+                <!--tab内容-->
+                <div class="tab-content" >
+                      <!-- 正文区域 -->
+                      <section class="content"> <!--专业信息-->
+    
+                        <div class="panel panel-default">
+                            <div class="panel-heading">位置信息</div>
+                            <div class="row data-type">
+
+
+                                <div class="col-md-2 title">所属建筑楼</div>
+                                <div class="col-md-4 data">
+                                    <select class="form-control"  v-model="locationModel.buildid" >
+                                        <option>请选择所属建筑</option>
+                                        <option  v-for="build in buildList" :value="build.id" v-text="build.dormitoryname" ></option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-2 title">纬度</div>
+                                <div class="col-md-4 data">
+                                    <input type="text" class="form-control" v-model="locationModel.gdLat"
+                                           placeholder="纬度" value="">
+                                </div>
+                                <div class="col-md-2 title">经度</div>
+                                <div class="col-md-4 data">
+                                    <input type="text" class="form-control" v-model="locationModel.gdLon"
+                                           placeholder="经度" value="">
+                                </div>
+
+                                <div class="col-md-2 title">位置序号</div>
+                                <div class="col-md-4 data">
+                                    <input type="text" class="form-control" v-model="locationModel.locationNum"
+                                           placeholder="序号" value="">
+                                </div>
+
+                                
+
+                            </div>
+                        </div>
+                        <!--订单信息/--> <!--工具栏-->
+                        <div class="box-tools text-center">
+                            <button type="button" v-on:click="addLocation()" class="btn bg-maroon">保存</button>
+                            <button type="button" class="btn bg-default"  onclick="history.back(-1);">返回</button>
+                        </div>
+                        <!--工具栏/-->
+                    </section>
+                    <!-- 正文区域 /-->
+                </div>
+               
+            </div>
+            <!--tab页/-->
+        </div>
+        
+    </section>
+      
+<script src="../../plugins/vue/axios-0.18.0.js"></script>
+    <script  src= '../../dist/js/common_dormitory.js' ></script>
+
+<script>  
+        var vue = new Vue({
+            el: "#app",
+            data: {
+                baseUrl : '',
+                buildList:[],
+        
+                locationModel: {
+                    id:"",
+                    buildid:"",
+                    gdLat:"",
+                    gdLon:"",
+                    locationNum:""
+                },
+                total:0,
+                totalPage:0,
+                params:{
+                    pageNum:"1",
+                    pageSize:"10"
+                }
+
+            },
+            methods: {
+                addLocation: function (){
+                    var _this = this;
+                    if(_this.locationModel.buildid==""||_this.locationModel.gdlat==""||_this.locationModel.gdlon==""
+                    ||_this.locationModel.locationNum==""){
+                        alert("请补全位置信息!");
+                    }else{
+                        axios.post(_this.baseUrl+"/location/add",_this.locationModel).then(function (response) {
+                            if(response.data.flag){
+                            alert(response.data.message);
+                            window.location.href="location_iframe.html";
+                            }else{
+                                alert(response.data.message);
+                            }
+        
+                        }).catch(function (err) {
+                        });
+
+                    }
+                    
+                },findBuildList: function(){
+                    
+                    var _this = this;      
+                    //deepth默认传递1表示查询楼的信息              
+                    axios.get(_this.baseUrl+"/dormitory/findDormitoryByDeepth?pageNum=1&pageSize=100&deepth=1").then((res)=>{
+                          
+                        _this.buildList=res.data.list;  
+                               
+                    }).catch(function (err) {
+                            console.log(err);
+                        });
+                    }
+            },
+            created(){
+                //从存储中取出基本请求路径
+                //取出基本请求路径
+                var httpUrl = warp.getBaseUrl();
+                this.baseUrl=httpUrl;
+                this.findBuildList();
+
+            }
+        });
+    
+</script>
+</body>
+</html>

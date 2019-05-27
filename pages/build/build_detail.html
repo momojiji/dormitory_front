@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>宿舍管理系统</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+  <!-- Pace -->
+  <link rel="stylesheet" href="../../plugins/pace-master/themes/blue/pace-theme-flash.css">
+  <script type="text/javascript" src="../../plugins/pace-master/pace.min.js"></script>
+  <!-- Bootstrap 3.3.6 -->
+  <link rel="stylesheet" href="../../bootstrap/css/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="../../dist/css/font-awesome.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="../../dist/css/ionicons.min.css">
+  <!-- jvectormap -->
+  <link rel="stylesheet" href="../../plugins/jvectormap/jquery-jvectormap-1.2.2.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../../dist/css/AdminLTE.min.css">
+  <!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+  <link rel="stylesheet" href="../../dist/css/skins/all-skins.min.css">
+  <link rel="stylesheet" href="../../plugins/treeTable/jquery.treetable.css">
+  <link rel="stylesheet" href="../../plugins/treeTable/jquery.treetable.theme.default.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+  <script src="../../plugins/vue/vuejs-2.5.16.js"></script>
+
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+    <section class="content-header">
+        
+        <ol class="breadcrumb">
+            <li><a href="../../welcome_iframe.html"><i class="fa fa-dashboard"></i>首页</a></li>
+            <li><a href="./build_iframe.html">建筑管理</a></li>
+            <li class="active">楼层管理</li>
+        </ol>
+    </section>
+ 
+    <!-- 正文区域 -->
+    <section class="content" id="app">
+
+        <div class="box-body">
+            <!--tab页-->
+            <div class="nav-tabs-custom">
+              
+                <!--tab头/-->
+                <!--tab内容-->
+                <div class="tab-content" >
+                     <!--工具栏-->
+                     <div class="pull-left">
+                            <div class="form-group form-inline">
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-default" title="新建" v-on:click="addDormitory()">
+                                        <i class="fa fa-file-o"></i> 添加楼层
+                                    </button>
+
+                                    <button type="button" class="btn btn-default" title="删除" v-on:click="deleteDormitory()">
+                                        <i class="fa fa-trash-o"></i> 删除
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                     <!--树表格-->
+                    <div class="tab-box" id="tab-treetable">
+                        <table id="collapse-table" class="table table-bordered table-hover dataTable">
+                            <thead>
+                                <tr>
+                                    <th class="" style="padding-right:0px;">
+                                                <input id="selall" type="checkbox" class="icheckbox_square-blue">
+                                    </th>
+                                    <th>序号</th>
+                                    <th>楼层名称</th>
+                                    <th>楼层编号</th>
+                                    <th>楼层级别</th>
+                                    <th>所属学院</th>
+                                    <th>负责人</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+
+
+                            <tbody>
+                                
+
+                                <tr v-for="(build,index) in dormitoryList" >
+                                    <td><input  type="checkbox" :value="build.id" v-model="dormitoryIds" ></td>
+                                    <td>
+                                        {{index+1}}
+                                    </td>
+                                    <td>{{build.dormitoryname}}</td>
+                                    <td>{{build.dormitorynum}}</td>
+                                    <td>{{build.deepth}}</td>
+                                    <td>{{build.institute}}</td>
+                                    <td>{{build.username}}</td>
+                                    <td class="text-center">
+                                        <button type="button" class="btn bg-olive btn-xs" v-on:click="editDormitory(build.id)" >修改
+                                        </button>
+                                        
+                                    </td>
+                                </tr>
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                    <!--树表格/-->
+
+                        <!-- /.box-body -->
+                    <!-- .box-footer-->
+                    <div class="box-footer">
+                        <div class="pull-left">
+                            <div class="form-group form-inline">
+                                总共{{totalPage}} 页，共{{total}} 条数据。 每页
+                                <select class="form-control" v-model="params.pageSize" v-on:change="goPageBySize()">
+                                    <option value="10">10</option>
+                                    <option value="15">15</option>
+                                    <option value="20">20</option>
+                                </select> 条
+                            </div>
+                        </div>
+
+                        <div class="box-tools pull-right">
+                            <ul class="pagination">
+                                <li>
+                                    <a href="#" aria-label="Previous">首页</a>
+                                </li>
+                                <li><a href="#" v-on:click="goPageByNum(params.pageNum-1)">上一页</a></li>
+                                <li v-for=" i in navateNumList"><a href="#" v-on:click="goPageByNum(i)">{{i}}</a></li>
+                                <li><a href="#" v-on:click="goPageByNum(params.pageNum+1)">下一页</a></li>
+                                <li>
+                                    <a href="#" aria-label="Next">尾页</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <!--部门/--> <!--工具栏-->
+                        <div class="box-tools text-center">
+                                 
+                                <button type="button" class="btn bg-default"  onclick="history.back(-1);">返回</button>
+                        </div>
+                        <!--工具栏/-->
+                    </div>
+                    <!-- /.box-footer-->
+                </div>
+                <!--tab内容/-->
+              
+            </div>
+            <!--tab页/-->
+        </div>
+        <!--模态窗口-->
+        <div class="tab-pane" id="add-model" >
+                <div id="add_dormitory" class="modal modal-primary" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title">增加楼层</h4>
+                            </div>
+    
+                            <div class="box-body">
+                                    <!--tab页-->
+                                    <div class="nav-tabs-custom">
+                                      
+                                        <!--tab头/-->
+                                        <!--tab内容-->
+                                        <div class="tab-content" >
+                                               <!-- 正文区域 -->
+                                               <section class="content"> <!--产品信息-->
+                        
+                                                <div class="panel panel-default">
+                                                    <div class="panel-heading">楼层信息</div>
+                                                    <div class="row data-type">
+                        
+                                                            <div class="col-md-2 title">建筑名称</div>
+                                                            <div class="col-md-4 data">
+                                                                <input type="text" class="form-control" v-model="dormitoryModel.dormitoryname"
+                                                                        placeholder="建筑名称" value="">
+                                                            </div>
+                                                            <div class="col-md-2 title">建筑编号</div>
+                                                            <div class="col-md-4 data">
+                                                                <input type="text" class="form-control" v-model="dormitoryModel.dormitorynum"
+                                                                        placeholder="建筑编号" value="">
+                                                            </div>
+                                                            <div class="col-md-2 title">建筑层级</div>
+                                                            <div class="col-md-4 data">
+                                                                <select class="form-control"  v-model="dormitoryModel.deepth" >
+                                                                    <option value="2" selected>层</option>
+                                                                    
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-2 title">所属宿舍楼</div>
+                                                            <div class="col-md-4 data">
+                                                                <select class="form-control" v-model="dormitoryModel.parentid" >
+                                                                    <option  v-for="dormitory in buildindList" :value="dormitory.id" v-text="dormitory.dormitoryname" ></option>
+                                                                </select>
+                                
+                                                            </div>
+                                                            <div class="col-md-2 title">所属院校</div>
+                                                            <div class="col-md-4 data">
+                                                                <select class="form-control"  v-model="dormitoryModel.collegeid" >
+                                                                        <option value=""  selected="selected">选择宿舍的院校</option>
+                                                                    <option  v-for="college in collegeList" :value="college.id" v-text="college.collegename" ></option>
+                                                                </select> 
+                                                            </div>
+                                                            <div class="col-md-2 title">负责人</div>
+                                                            <div class="col-md-4 data">
+                                                                <select class="form-control select2" style="width: 100%" v-model="dormitoryModel.userid">
+                                                                    <option value=""  selected="selected">选择宿舍负责人</option>
+                                                                    <option  v-for="user in userList" :value="user.id" v-text="user.username" ></option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-2 title">排序编号</div>
+                                                            <div class="col-md-4 data">
+                                                                <input type="text" class="form-control" v-model="dormitoryModel.ordernum"
+                                                                    placeholder="排序编号" value="">
+                                                            </div>
+                        
+                                                    </div>
+                                                </div>
+                                                <!--订单信息/--> <!--工具栏-->
+                                                <div class="box-tools text-center">
+                                                    <button type="button" v-on:click="submitAdd()" class="btn bg-maroon">保存</button>
+                                                    
+                                                </div>
+                                                <!--工具栏/-->
+                                            </section>
+                                            <!-- 正文区域 /-->
+                        
+                                        </div>
+                                       
+                                    </div>
+                                    <!--tab页/-->
+                                </div>
+                            <!-- 数据表格 /-->
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+    
+                    <!-- /.modal-dialog -->
+                </div>
+                <!-- /.modal -->
+        </div>
+        <!--模态窗口/-->
+         <!--模态窗口-->
+         <div class="tab-pane" id="add-model" >
+                <div id="edit_dormitory" class="modal modal-primary" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title">修改楼层</h4>
+                            </div>
+    
+                            <div class="box-body">
+                                    <!--tab页-->
+                                    <div class="nav-tabs-custom">
+                                      
+                                        <!--tab头/-->
+                                        <!--tab内容-->
+                                        <div class="tab-content" >
+                                               <!-- 正文区域 -->
+                                               <section class="content"> <!--产品信息-->
+                        
+                                                <div class="panel panel-default">
+                                                    <div class="panel-heading">建筑信息</div>
+                                                    <div class="row data-type">
+                        
+                                                            <div class="col-md-2 title">建筑名称</div>
+                                                            <div class="col-md-4 data">
+                                                                <input type="text" class="form-control" v-model="dormitoryModel.dormitoryname"
+                                                                        placeholder="建筑名称" value="">
+                                                            </div>
+                                                            <div class="col-md-2 title">建筑编号</div>
+                                                            <div class="col-md-4 data">
+                                                                <input type="text" class="form-control" v-model="dormitoryModel.dormitorynum"
+                                                                        placeholder="建筑编号" value="">
+                                                            </div>
+                                                            <div class="col-md-2 title">建筑层级</div>
+                                                            <div class="col-md-4 data">
+                                                                <select class="form-control" v-model="dormitoryModel.deepth" >
+                                                                    <option value="2" selected>层</option>
+                                                                    
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-md-2 title">所属宿舍楼</div>
+                                                            <div class="col-md-4 data">
+                                                                <select class="form-control" v-model="dormitoryModel.parentid" >
+                                                                    <option  v-for="dormitory in buildindList" :value="dormitory.id" v-text="dormitory.dormitoryname" ></option>
+                                                                </select>
+                                
+                                                            </div>
+                                                          
+                                                            <div class="col-md-2 title">排序编号</div>
+                                                            <div class="col-md-4 data">
+                                                                <input type="text" class="form-control" v-model="dormitoryModel.ordernum"
+                                                                    placeholder="排序编号" value="">
+                                                            </div>
+                        
+                                                    </div>
+                                                </div>
+                                                <!--订单信息/--> <!--工具栏-->
+                                                <div class="box-tools text-center">
+                                                    <button type="button" v-on:click="submitUpdate()" class="btn bg-maroon">保存</button>
+                                                    
+                                                </div>
+                                                <!--工具栏/-->
+                                            </section>
+                                            <!-- 正文区域 /-->
+                        
+                                        </div>
+                                       
+                                    </div>
+                                    <!--tab页/-->
+                                </div>
+                            <!-- 数据表格 /-->
+                        </div>
+                        <!-- /.modal-content -->
+                    </div>
+    
+                    <!-- /.modal-dialog -->
+                </div>
+                <!-- /.modal -->
+        </div>
+        <!--模态窗口/-->
+    </section>
+      
+<script src="../../plugins/vue/axios-0.18.0.js"></script>
+<script  src= '../../dist/js/common_dormitory.js' ></script>
+<script src="../../plugins/jQuery/jquery-2.2.3.min.js"></script>
+<script src="../../plugins/treeTable/jquery.treetable.js"></script>
+<script src="../../bootstrap/js/bootstrap.min.js"></script>
+<script>   
+    
+    var vue = new Vue({
+        el: "#app",
+        data: {
+            dormitoryParentName:"",
+            dormitoryId:"",
+            baseUrl : '',
+            navateNumList:[],
+            buildindList:[],
+            collegeList:[],
+            userList:[],
+            dormitoryList:[],
+            dormitoryIds:[],
+            total:0,
+            totalPage:0,
+            dormitoryModel:{
+                id :"",
+                dormitoryname:"",
+                dormitorynum:"",
+                parentcode:"",
+                deepth:"",
+                collegeid:"",
+                status:"",
+                ordernum:"",
+                remarks:"",
+                parentid:"",
+                userid:""
+            },
+            defaultModel:{
+                id :"",
+                dormitoryname:"",
+                dormitorynum:"",
+                parentcode:"",
+                deepth:"",
+                collegeid:"",
+                status:"",
+                ordernum:"",
+                remarks:"",
+                parentid:"",
+                userid:""
+            },
+            params:{
+                pageNum:"1",
+                pageSize:"10"
+            }
+        },
+        methods: {
+        goPageByNum: function(pageNum){
+            var _this  = this;
+            _this.params.pageNum=pageNum;
+            _this.findAllDormitory();
+        }, goPageBySize: function(){
+            var _this  = this;
+            _this.findAllDormitory();
+        },
+        findDormitoryByDeepth: function () {      
+            //deepth默认传递2表示查询楼层的信息 
+            var _this = this;
+            axios.get(_this.baseUrl+"/dormitory/findFloorDormitory?pageNum="+_this.params.pageNum+"&pageSize="+_this.params.pageSize+"&parentId="+_this.dormitoryId).then((res)=>{
+                //楼层集合
+                _this.dormitoryList=res.data.list;
+                _this.total=res.data.total;
+                _this.totalPage=res.data.pages;
+                _this.params.pageNum=res.data.pageNum;
+                _this.params.pageSize=res.data.pageSize;
+                _this.navateNumList=res.data.navigatepageNums;
+            }).catch(function (err) {
+                console.log(err);
+            });             
+            
+        },findBuildListJson :function(){
+            var _this = this;
+            axios.get(_this.baseUrl+"/dormitory/findBuildListJson").then((res)=>{
+                //宿舍楼集合
+                _this.buildindList=res.data.data;
+
+            }).catch(function (err) {
+                console.log(err);
+            });
+        },
+        findCollegeList :function(){
+            var _this = this;
+            axios.get(_this.baseUrl+"/college/findCollegeJsonById").then((res)=>{
+                //院校集合
+                _this.collegeList=res.data.data;
+            }).catch(function (err) {
+            });
+        },findUserList :function(){
+            var _this = this;
+            axios.get(_this.baseUrl+"/admin/findAllUserNoPage").then((res)=>{
+                //用户集合
+                _this.userList=res.data.data;
+            }).catch(function (err) {
+            });
+        }, addDormitory: function (){
+            
+            var _this = this;
+            axios.get(_this.baseUrl+"/dormitory/findDormitoryById?dormitoryId="+_this.dormitoryId).then(function (response) {
+                _this.dormitoryModel.parentid=response.data.data.id;
+                _this.dormitoryModel.collegeid=response.data.data.collegeid;
+                _this.dormitoryModel.userid=response.data.data.userid;
+                _this.findCollegeList();
+                _this.findUserList();
+                _this.findBuildListJson();
+                $('#add_dormitory').modal('show');
+                _this.dormitoryModel=_this.defaultModel;
+            }).catch(function(err){
+                console.log(err);
+            });           
+        }, submitAdd:function(){
+            var _this = this;
+                axios.post(_this.baseUrl+"/dormitory/addDormitory",_this.dormitoryModel).then(function (response) {
+                if(response.data.flag){
+                    alert(response.data.message);
+                    _this.findDormitoryByDeepth();
+                    $('#add_dormitory').modal('hide');  
+                    
+                }else{
+                    alert(response.data.message);
+                }
+            }).catch(function (err) {
+            });
+        },
+        editDormitory: function (dormitoryId){
+            var _this = this;
+            axios.get(_this.baseUrl+"/dormitory/findDormitoryById?dormitoryId="+dormitoryId).then((res)=>{
+                //编辑的楼层对象
+                _this.dormitoryModel=res.data.data;
+                _this.findCollegeList();
+                _this.findUserList();
+                _this.findBuildListJson();
+                $('#edit_dormitory').modal('show');  
+            }).catch(function (err) {
+                console.log(err);
+            });
+            
+        },submitUpdate:function(){
+            var _this = this;
+                axios.post(_this.baseUrl+"/dormitory/updateDormitory",_this.dormitoryModel).then(function (response) {
+                if(response.data.flag){
+                    alert(response.data.message);
+                    _this.findDormitoryByDeepth();
+                    $('#edit_dormitory').modal('hide');  
+                    
+                }else{
+                    alert(response.data.message);
+                }
+            }).catch(function (err) {
+            });
+        },
+        deleteDormitory: function () {
+            var _this = this;
+            if(this.dormitoryIds.length>0){
+                var flag = window.confirm("您确定要删除选中的"+_this.dormitoryIds.length+"条数据吗?");
+                if(flag){
+                    axios.post(_this.baseUrl+"/dormitory/deleteDormitorys",_this.dormitoryIds).then(function (response) {
+                        if(response.data.flag){
+                            alert(response.data.message);
+                            _this.findDormitoryByDeepth();
+                        }else{
+                            alert(response.data.message);
+                        }
+                    }).catch(function (err) {
+                    });
+                }
+            }else{
+                alert("请选择删除的数据 可以多选!");
+            }
+
+        }
+    },created(){               
+            //取出基本请求路径
+            var httpUrl = warp.getBaseUrl();
+            this.baseUrl=httpUrl;
+            //获取传递的id参数
+            var str = window.location.href;
+            var argStr = str.split("=");
+            var dormitoryId = argStr[1];
+            this.dormitoryId=dormitoryId;
+            this.dormitoryModel.parentid=dormitoryId;
+            this.findDormitoryByDeepth();
+           
+           
+            
+            
+           
+        }
+    });
+    
+</script>
+
+</body>
+</html>

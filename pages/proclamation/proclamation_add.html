@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>AdminLTE 2 | Dashboard</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+  <!-- Pace -->
+  <link rel="stylesheet" href="../../plugins/pace-master/themes/blue/pace-theme-flash.css">
+  <script type="text/javascript" src="../../plugins/pace-master/pace.min.js"></script>
+  <!-- Bootstrap 3.3.6 -->
+  <link rel="stylesheet" href="../../bootstrap/css/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="../../dist/css/font-awesome.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="../../dist/css/ionicons.min.css">
+  <!-- jvectormap -->
+  <link rel="stylesheet" href="../../plugins/jvectormap/jquery-jvectormap-1.2.2.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../../dist/css/AdminLTE.min.css">
+  <!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+  <link rel="stylesheet" href="../../dist/css/skins/all-skins.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+  <script src="../../plugins/vue/vuejs-2.5.16.js"></script>
+
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+    <!-- 正文区域 -->
+    <section class="content" id="app">
+        <div class="box-body">
+            <!--tab页-->
+            <div class="nav-tabs-custom">
+                <!--tab头/-->
+                <!--tab内容-->
+                <div class="tab-content" >
+                      <!-- 正文区域 -->
+                      <section class="content"> <!--公告信息管理-->
+    
+                        <div class="panel panel-default">
+                            <div class="panel-heading">公告信息管理</div>
+                            <div class="row data-type">
+
+                                <div class="col-md-2 title">公告标题</div>
+                                <div class="col-md-4 data">
+                                    <input type="text" class="form-control" v-model="proclamationModel.title"
+                                            placeholder="公告标题" value="">
+                                </div>
+                                <div class="col-md-2 title">公告内容</div>
+                                <div class="col-md-4 data">
+                                    <input type="text" class="form-control" v-model="proclamationModel.content"
+                                            placeholder="公告内容" value="">
+                                </div>
+                               
+                                <div class="col-md-2 title">公告发布时间</div>
+                                <div class="col-md-4 data">                                   
+                                    <div class="input-group date">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                    </div>
+                                    <input type="text" class="form-control pull-right" placeholder="2019-01-01 01:00:00" v-model="proclamationModel.begintime" >
+                                    </div>
+                                </div>
+                                <div class="col-md-2 title">公告截止时间</div>
+                                <div class="col-md-4 data">                                   
+                                    <div class="input-group date">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-calendar"></i>
+                                    </div>
+                                    <input type="text" class="form-control pull-right" placeholder="2019-12-31 23:59:59" v-model="proclamationModel.endtime" >
+                                    </div>
+                                </div>
+                                <div class="col-md-2 title">公告类型</div>
+                                <div class="col-md-4 data">
+                                    <select class="form-control select2" style="width: 100%" v-model="proclamationModel.noticetype">
+                                        <option value="1"  selected="selected">公告</option>
+                                        <option value="0">动态</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 title">公告优先级</div>
+                                <div class="col-md-4 data">
+                                    <input type="text" class="form-control" v-model="proclamationModel.priority"
+                                           placeholder="数值越大优先级别越高" value="">
+                                </div>
+                                <div class="col-md-2 title">打开方式</div>
+                                <div class="col-md-4 data">
+                                    <select class="form-control select2" style="width: 100%" v-model="proclamationModel.apptype">
+                                        <option value="0"  selected="selected">内部打开</option>
+                                        <option value="1">网页跳转</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 title">跳转网页地址</div>
+                                <div class="col-md-4 data">
+                                    <input type="text" class="form-control" v-model="proclamationModel.url"
+                                           placeholder="打开方式为网页跳转则必填" value="">
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <!--订单信息/--> <!--工具栏-->
+                        <div class="box-tools text-center">
+                            <button type="button" v-on:click="addProclamation()" class="btn bg-maroon">保存</button>
+                            <button type="button" class="btn bg-default"  onclick="history.back(-1);">返回</button>
+                        </div>
+                        <!--工具栏/-->
+                    </section>
+                    <!-- 正文区域 /-->
+                </div>
+               
+            </div>
+            <!--tab页/-->
+        </div>
+        
+    </section>
+      
+<script src="../../plugins/vue/axios-0.18.0.js"></script>
+<script  src= '../../dist/js/common_dormitory.js' ></script>
+
+
+<script>  
+        var vue = new Vue({
+            el: "#app",
+            data: {
+                baseUrl : '',
+                proclamationList:[],
+                proclamationIds:[],
+                navateNumList:[],
+                title:'',
+                proclamationModel: {
+                    title:"",
+                    content:"",
+                    noticetype:"",
+                    begintime:"",
+                    endtime:"",
+                    priority:"",
+                    apptype:"",
+                    url:""
+                },
+                total:0,
+                totalPage:0,
+                params:{
+                    pageNum:"1",
+                    pageSize:"10"
+                },
+                level : 0,
+
+            },
+            methods: {
+                addProclamation: function (){
+                    var _this = this;
+                    if(_this.proclamationModel.title==""||_this.proclamationModel.content==""||
+                    _this.proclamationModel.noticetype==""||_this.proclamationModel.apptype==""){
+                        alert("请输入完全公告信息!");
+                    }else if(_this.proclamationModel.apptype=="1"&&_this.proclamationModel.appurl==""){
+                        alert("请输入跳转公告的请求url地址!");
+                    }else{
+                        //年月日时分秒正则表达式
+
+                        var b=_this.proclamationModel.begintime.match(/^(\d{1,4})\-(\d{1,2})\-(\d{1,2}) (\d{1,2}):(\d{1,2}):(\d{1,2})$/); 
+                        var e=_this.proclamationModel.endtime.match(/^(\d{1,4})\-(\d{1,2})\-(\d{1,2}) (\d{1,2}):(\d{1,2}):(\d{1,2})$/); 
+                        if(b==null||e==null){
+                            alert("请输入格式正确的日期\n\r日期格式例 如：2008-08-08 13:34:23");                       
+                        }else{
+                            var token  =sessionStorage.getItem('usertoken');
+                            axios.post(_this.baseUrl+"/proclamation/addProclamation",
+                                {
+                                    headers: {
+                                        'Authorization': token
+                                    }                                     
+
+                                },{
+                                    data:  _this.proclamationModel,
+                            
+                                },).then(function (response) {
+                                if(response.data.flag){
+                                    alert(response.data.message);
+                                    window.location.href="proclamation_iframe.html";
+                                }else if(response.data.code=8888){
+                                    alert(response.data.message);
+                                    window.parent.location.href = '/login.html';
+                                }else{
+                                    alert(response.data.message);
+                                }
+                                }).catch(function (err) {
+                            });
+                        }                  
+                    }
+                    
+                }
+            },
+            created(){
+                //从存储中取出基本请求路径
+                //取出基本请求路径
+                var httpUrl = warp.getBaseUrl();
+                this.baseUrl=httpUrl;
+               
+
+            }
+        });
+    
+</script>
+</body>
+</html>

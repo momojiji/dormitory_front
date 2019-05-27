@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>用户添加</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+  <!-- Pace -->
+  <link rel="stylesheet" href="../../plugins/pace-master/themes/blue/pace-theme-flash.css">
+  <script type="text/javascript" src="../../plugins/pace-master/pace.min.js"></script>
+  <!-- Bootstrap 3.3.6 -->
+  <link rel="stylesheet" href="../../bootstrap/css/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="../../dist/css/font-awesome.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="../../dist/css/ionicons.min.css">
+  <!-- jvectormap -->
+  <link rel="stylesheet" href="../../plugins/jvectormap/jquery-jvectormap-1.2.2.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../../dist/css/AdminLTE.min.css">
+  <!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+  <link rel="stylesheet" href="../../dist/css/skins/all-skins.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+  <script src="../../plugins/vue/vuejs-2.5.16.js"></script>
+
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+ 
+    <!-- 正文区域 -->
+    <section class="content" id="app">
+
+        <div class="box-body">
+            <!--tab页-->
+            <div class="nav-tabs-custom">
+              
+                <!--tab头/-->
+                <!--tab内容-->
+                <div class="tab-content" >
+                      <!-- 正文区域 -->
+                      <section class="content"> <!--用户信息-->
+    
+                        <div class="panel panel-default">
+                            <div class="panel-heading">用户信息</div>
+                            <div class="row data-type">
+        
+                                <div class="col-md-2 title">用户名称</div>
+                                <div class="col-md-4 data">
+                                    <input type="text" class="form-control" v-model="userModel.username"
+                                        placeholder="用户名称" value="">
+                                </div>
+                                <div class="col-md-2 title">联系电话</div>
+                                <div class="col-md-4 data">
+                                    <input type="text" class="form-control" v-model="userModel.telphone"
+                                           placeholder="联系电话" value="">
+                                </div>
+                                <div class="col-md-2 title">登录名称</div>
+                                <div class="col-md-4 data">
+                                    <input type="text" class="form-control" v-model="userModel.loginname"
+                                           placeholder="登录名称" value="">
+                                </div>
+                                <div class="col-md-2 title">部门</div>
+                                <div class="col-md-4 data">
+        
+                                    <select class="form-control select2" style="width: 100%"
+                                            v-model="userModel.deptid">
+                                            <option value="" >请选择部门</option>
+                                            <option  v-for="dept in deptList" :value="dept.id" v-text="dept.deptname" ></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 title">角色</div>
+                                <div class="col-md-4 data">
+        
+                                        <select class="form-control select2" style="width: 100%"
+                                                v-model="userModel.roleid">
+                                                <option value="" >请选择角色</option>
+                                                <option  v-for="role in roleList" :value="role.id" v-text="role.rolename" ></option>
+                                        </select>
+                                </div>
+                                <div class="col-md-2 title">地址</div>
+                                <div class="col-md-4 data">
+                                    <input type="text" class="form-control" v-model="userModel.address"
+                                        placeholder="地址" value="">
+                                </div>
+                                <div class="col-md-2 title">性别</div>
+                                <div class="col-md-4 data">
+                                    <select class="form-control select2" style="width: 100%"
+                                            v-model="userModel.sex">
+                                        <option value="0" selected="selected">男</option>
+                                        <option value="1">女</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 title">用户状态</div>
+                                <div class="col-md-4 data">
+                                    <select class="form-control select2" style="width: 100%"
+                                        v-model="userModel.status">
+                                        <option value="0"  selected="selected">开启</option>
+                                        <option value="1">关闭</option>
+        
+                                    </select>
+                                </div>
+        
+                            </div>
+                        </div>
+                        <!--订单信息/--> <!--工具栏-->
+                        <div class="box-tools text-center">
+                            <button type="button" v-on:click="updateUser()" class="btn bg-maroon">保存</button>
+                            <button type="button" class="btn bg-default"
+                                onclick="history.back(-1);">返回</button>
+                        </div>
+                        <!--工具栏/-->
+                    </section>
+                    <!-- 正文区域 /-->
+                </div>
+               
+            </div>
+            <!--tab页/-->
+        </div>
+        
+    </section>
+      
+<script src="../../plugins/vue/axios-0.18.0.js"></script>
+<script  src= '../../dist/js/common_dormitory.js' ></script>
+
+<script>  
+        var vue = new Vue({
+            el: "#app",
+            data: {
+                baseUrl : '',                
+                deptList:[],
+                roleList:[],
+                userModel: {
+                    id:"",
+                    username:"",
+                    telphone:"",
+                    loginname:"",
+                    password:"",
+                    deptid:"",
+                    address:"",
+                    sex:"",
+                    status:"",
+                    isvalid:"",
+                    roleid:""
+                }
+            },
+            methods: {
+                editUserById: function (){
+                    var _this = this;
+                    //获取传递的id参数
+                    var str = window.location.href;
+                    var argStr = str.split("=");
+                    var userId = argStr[1];
+           
+                    axios.get(_this.baseUrl+"/admin/findUserById?id="+userId).then((res)=>{
+                        _this.userModel=res.data.data;                       
+                    }).catch(function (err) {
+                        console.log(err);
+                    });
+                 },
+                updateUser: function (){
+                    var _this = this;
+                    if(_this.userModel.deptid==""||_this.userModel.deptid==null){
+                        alert("请选择部门!");
+                    }if(_this.userModel.sex==""||_this.userModel.sex==null){
+                        alert("请选择性别!");
+                    }if(_this.userModel.roleid==""||_this.userModel.roleid==null){
+                        alert("请选择角色!");
+                    } if(_this.userModel.username==""||_this.userModel.username==null){
+                        alert("请输入用户名!");
+                    }if(_this.userModel.password==""||_this.userModel.password==null){
+                        alert("请输入密码!");
+                    }if(_this.userModel.loginname==""||_this.userModel.loginname==null){
+                        alert("请输入登录账号!");
+                    }
+                    else{
+                        axios.post(_this.baseUrl+"/admin/editUser",_this.userModel).then(function (response) {
+                        if(response.data.flag){
+                            alert(response.data.message);
+                           window.location.href="./user_iframe.html";
+                        }else{
+                            alert(response.data.message);
+                        }
+    
+                    }).catch(function (err) {
+                        console.log(err);
+                    });
+                    }
+                   
+                },findDeptJson: function(){
+                    var _this = this;
+                    axios.get(_this.baseUrl+"/department/findAll").then((res)=>{
+                        _this.deptList=res.data.data;
+                    })
+                },findRoleList:function(){
+                    var _this = this;
+                    axios.get(_this.baseUrl+"/role/findAll").then((res)=>{
+                        _this.roleList=res.data.data;
+                    })
+                }
+            },
+            created(){
+                //取出基本请求路径
+                var httpUrl = warp.getBaseUrl();
+                this.baseUrl=httpUrl;
+                this.editUserById();
+                this.findDeptJson();
+                this.findRoleList();
+
+            }
+        });
+    
+</script>
+</body>
+</html>

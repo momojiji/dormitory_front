@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>AdminLTE 2 | Dashboard</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+  <!-- Pace -->
+  <link rel="stylesheet" href="../../plugins/pace-master/themes/blue/pace-theme-flash.css">
+  <script type="text/javascript" src="../../plugins/pace-master/pace.min.js"></script>
+  <!-- Bootstrap 3.3.6 -->
+  <link rel="stylesheet" href="../../bootstrap/css/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="../../dist/css/font-awesome.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="../../dist/css/ionicons.min.css">
+  <!-- jvectormap -->
+  <link rel="stylesheet" href="../../plugins/jvectormap/jquery-jvectormap-1.2.2.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../../dist/css/AdminLTE.min.css">
+  <!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+  <link rel="stylesheet" href="../../dist/css/skins/all-skins.min.css">
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+  <script src="../../plugins/vue/vuejs-2.5.16.js"></script>
+
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+    <!-- 正文区域 -->
+    <section class="content" id="app">
+        <div class="box-body">
+            <!--tab页-->
+            <div class="nav-tabs-custom">
+                <!--tab头/-->
+                <!--tab内容-->
+                <div class="tab-content" >
+                      <!-- 正文区域 -->
+                      <section class="content"> <!--轮播图管理-->
+    
+                        <div class="panel panel-default">
+                            <div class="panel-heading">轮播图信息</div>
+                            <div class="row data-type">
+
+                                <div class="col-md-2 title">模块名称</div>
+                                <div class="col-md-4 data">
+                                    <input type="text" class="form-control"  disabled="disabled" v-model="appbannelModel.modelname"
+                                            placeholder="模块名称" value="">
+                                </div>
+                                <div class="col-md-2 title">图片名称</div>
+                                <div class="col-md-4 data">
+                                    <input type="text" class="form-control"  disabled="disabled" v-model="appbannelModel.imgname"
+                                            placeholder="图片名称" value="">
+                                </div>
+                                <div class="col-md-2 title">图片后缀</div>
+                                <div class="col-md-4 data">
+                                    <input type="text" class="form-control"  disabled="disabled" v-model="appbannelModel.imgsuffix"
+                                            placeholder="图片后缀" value="">
+                                </div>
+
+                                <div class="col-md-2 title">图片地址</div>
+                                <div class="col-md-4 data">
+                                    <input type="text" class="form-control"  disabled="disabled"  v-model="appbannelModel.imgurl"
+                                            placeholder="图片地址" value="">
+                                </div>
+
+                                <div class="col-md-2 title">发布时间</div>
+                                <div class="col-md-4 data">
+                                    <input type="text" class="form-control"  disabled="disabled" v-model="appbannelModel.releasedate"
+                                           placeholder="发布时间" value="">
+                                </div>
+
+                                <div class="col-md-2 title">有效时间</div>
+                                <div class="col-md-4 data">
+                                    <input type="text" class="form-control"  disabled="disabled" v-model="appbannelModel.effectivetime"
+                                           placeholder="有效时间" value="">
+                                </div>
+
+                                <div class="col-md-2 title">图片尺寸</div>
+                                <div class="col-md-4 data">
+                                    <input type="text" class="form-control"  disabled="disabled" v-model="appbannelModel.imgsize"
+                                           placeholder="图片尺寸" value="">
+                                </div>
+
+                                <div class="col-md-2 title">图片类型</div>
+                                <div class="col-md-4 data">
+                                    <input type="text" class="form-control"  disabled="disabled" v-model="appbannelModel.imgtype"
+                                           placeholder="图片类型" value="">
+                                </div>
+
+                                <div class="col-md-2 title">排序号</div>
+                                <div class="col-md-4 data">
+                                    <input type="text" class="form-control"  disabled="disabled" v-model="appbannelModel.ordernum"
+                                           placeholder="排序号" value="">
+                                </div>
+
+                                <div class="col-md-2 title">图片状态</div>
+                                <div class="col-md-4 data">
+                                    <select class="form-control select2"  disabled="disabled" style="width: 100%" v-model="appbannelModel.status">
+                                        <option value="0"  selected="selected">成功</option>
+                                        <option value="1">失败</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 title">是否可用</div>
+                                <div class="col-md-4 data">
+                                    <select class="form-control select2"  disabled="disabled" style="width: 100%" v-model="appbannelModel.isvalidate">
+                                        <option value="0"  selected="selected">开启</option>
+                                        <option value="1">关闭</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 title">备注</div>
+                                <div class="col-md-4 data">
+                                    <input type="text" class="form-control"  disabled="disabled" v-model="appbannelModel.remarks"
+                                           placeholder="备注" value="">
+                                </div>
+                            </div>
+                        </div>
+                        <!--订单信息/--> <!--工具栏
+                        <div class="box-tools text-center">
+                            <button type="button" v-on:click="editAppbannel()" class="btn bg-maroon">保存</button>
+                        </div>-->
+                        <!--工具栏/-->
+                    </section>
+                    <!-- 正文区域 /-->
+                </div>
+
+            </div>
+            <!--tab页/-->
+        </div>
+
+    </section>
+
+<script src="../../plugins/vue/axios-0.18.0.js"></script>
+    <script  src= '../../dist/js/common_dormitory.js' ></script>
+
+<script>
+        var vue = new Vue({
+            el: "#app",
+            data: {
+                baseUrl : '',
+                appbannelList:[],
+                appbannelIds:[],
+                navateNumList:[],
+                appbannelname:'',
+                appbannelModel: {
+                    id:"",
+                    modelname:"",
+                    imgname:"",
+                    imgsuffix:"",
+                    imgurl:"",
+                    status:"",
+                    releasedate:"",
+                    effectivetime:"",
+                    imgsize:"",
+                    imgtype:"" ,
+                    ordernum:""
+                },
+                total:0,
+                totalPage:0,
+                params:{
+                    pageNum:"1",
+                    pageSize:"10"
+                },
+                level : 0,
+
+            },
+            methods: {
+                editAppbannelById: function (){
+                    var _this = this;
+                    //获取传递的id参数
+                    var str = window.location.href;
+                    var argStr = str.split("=");
+                    var appbannelId = argStr[1];
+                    axios.get(_this.baseUrl+"/appbannel/findById?appbannelId="+appbannelId).then((res)=>
+                    {
+                        _this.appbannelModel=res.data.data;
+                     }).catch(function (err) {
+                    });
+                },
+                editAppbannel: function (){
+                    var _this = this;
+                    axios.post(_this.baseUrl+"/appbannel/editAppbannel",_this. appbannelModel).then(function (response) {
+                        if(response.data.flag){
+                            alert(response.data.message);
+                           window.location.href="appbannel_iframe.html";
+                        }else{
+                            alert(response.data.message);
+                        }
+    
+                    }).catch(function (err) {
+                    });
+                }
+            },
+            created(){
+                //从存储中取出基本请求路径
+                //取出基本请求路径
+                var httpUrl = warp.getBaseUrl();
+                this.baseUrl=httpUrl;
+                this.editAppbannelById();
+
+            }
+        });
+    
+</script>
+</body>
+</html>
